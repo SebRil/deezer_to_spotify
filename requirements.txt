@@ -1,0 +1,5 @@
+bs4
+lxml
+requests
+pandas
+PyQt5~=5.15.4
