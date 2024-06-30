@@ -19,6 +19,7 @@ class DeezerHandler:
 			self.client = self.public_client
 
 	def get_user_name(self, user_id=None):
+		# TODO: handle exception if user_id wrong
 		if user_id :
 			user = self.client.get_user(user_id)
 		else :
@@ -29,10 +30,10 @@ class DeezerHandler:
 		print("Getting playlists")
 		if self.private_client:
 			print("Getting playlists private client")
-			private_user = self.private_client.get_user() #2328033 pour daph
+			private_user = self.private_client.get_user()
 			user_id = private_user.id
 		print("Getting public user")
-		public_user = self.public_client.get_user(user_id)  # 2328033 pour daph
+		public_user = self.public_client.get_user(user_id)
 
 		if self.private_client:
 			private_playlists = private_user.get_playlists()
