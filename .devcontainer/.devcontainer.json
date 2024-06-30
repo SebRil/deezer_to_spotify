@@ -1,0 +1,20 @@
+{
+	// https://containers.dev/implementors/json_reference/
+	"name": "Codespace for Deezer to Spotify streamlit app",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+
+	"init": true,
+	"overrideCommand": false, // do not override default docker CMD
+
+	// RStudio ports
+	"forwardPorts": [8501],
+	"portsAttributes": {
+		"8787": {
+			"label": "Streamlit app",
+			"requireLocalPort": true,
+			"onAutoForward": "openBrowser"
+		}
+	}
+}
