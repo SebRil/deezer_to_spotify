@@ -2,16 +2,61 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import os
 from math import ceil
+import base64
+import datetime
+from urllib.parse import urlencode
+import requests
+import spotipy.util as util
+
 
 
 class SpotifyHandler:
 
     def __init__(self, client_id, client_secret, redirect_uri):
+        print('Creation d\'un client spotify')
         os.environ['SPOTIPY_CLIENT_ID'] = client_id
         os.environ['SPOTIPY_CLIENT_SECRET'] = client_secret
         os.environ['SPOTIPY_REDIRECT_URI'] = redirect_uri
+        
         scope = "user-library-read playlist-modify-private playlist-modify-public"
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+
+        #print('test')
+        #token = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+        #cache_token = token.get_access_token()
+        #print(cache_token)
+        #self.sp = spotipy.Spotify(cache_token)
+
+        #self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(),scope=scope)
+        
+        #username = 'serilba@laposte.net'
+        #scope = "user-library-read playlist-modify-private playlist-modify-public"
+        #token = util.prompt_for_user_token(username, scope)
+        #self.sp = spotipy.Spotify(auth=token)
+        #results = sp.current_user_saved_tracks()
+
+        #access_token = None
+        #token_url = "https://accounts.spotify.com/api/token"
+        #if client_secret == None or client_id == None:
+          #raise Exception("You must set client_id and client_secret")
+        #client_creds = f"{client_id}:{client_secret}"
+        #client_creds_b64 = base64.b64encode(client_creds.encode())
+        #print(client_creds)
+        #print(client_creds_b64)
+        #token_headers = {"Authorization": f"Basic {client_creds_b64}"}
+        #token_data = {"grant_type": "client_credentials"}
+        #r = requests.post(token_url, data=token_data, headers=token_headers)
+        #print(r)
+        #print(r.status_code)
+        #if r.status_code not in range(200, 299): 
+            #print("Could not authenticate client")
+        #print('yolo')
+        #data = r.json()
+        #print(data)
+        #access_token = data['access_token']
+        #print(access_token)
+        #self.sp = spotipy.Spotify(auth=access_token)
+
         try :
             self.user_id = self.sp.current_user()['id']
         except :
@@ -110,3 +155,20 @@ class SpotifyHandler:
             j += API_limit
         if last_packet_length > 0:
             self.sp.playlist_add_items(playlist_id, tracks_list[j:(j + last_packet_length)])
+    
+    # Récupère les playlists
+    def get_playlists(self):
+        playlists = self.sp.current_user_playlists()
+        playlists_dict = {}
+        for playlist in playlists['items']:
+            playlists_dict[playlist['name']] = {}
+            playlists_dict[playlist['name']]['id'] = playlist['id']
+            playlists_dict[playlist['name']]['tracks'] = ['TODO']
+            # TODO: add list of tracks in this playlist!
+        return playlists_dict
+
+    # Récupère les morceaux d'une playlist
+    def get_playlist_tracks(self,playlist_id):
+        tracks = self.sp.playlist(playlist_id,additional_types=('track'))
+        print('##########################')
+        print(tracks['items'])

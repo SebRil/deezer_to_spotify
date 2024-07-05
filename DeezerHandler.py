@@ -98,3 +98,11 @@ class DeezerHandler:
 			i+=25
 		output_dict['Coups de coeur'] = result
 		return output_dict
+	
+	def get_public_playlist(self, playlist_id):
+		playlist = None
+		try:
+			playlist = self.client.get_playlist(playlist_id)
+		except Exception as e:
+			print('Couldn\'t retrieve playlist with id: ' + playlist_id)
+		return playlist
