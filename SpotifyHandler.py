@@ -2,6 +2,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import os
 from math import ceil
+import urllib.parse
 import base64
 import datetime
 from urllib.parse import urlencode
@@ -13,7 +14,6 @@ import spotipy.util as util
 class SpotifyHandler:
 
     def __init__(self, client_id, client_secret, redirect_uri):
-        print('Creation d\'un client spotify')
         os.environ['SPOTIPY_CLIENT_ID'] = client_id
         os.environ['SPOTIPY_CLIENT_SECRET'] = client_secret
         os.environ['SPOTIPY_REDIRECT_URI'] = redirect_uri
@@ -96,7 +96,8 @@ class SpotifyHandler:
     def find_track(self, track_name, track_artist=None, track_album=None):
         if len(track_name)>100 :
             track_name = track_name[:99]
-        query_result = self.sp.search(track_name, limit=5, type='track')['tracks']['items']
+        query_string=('track:`"{0}`" artist:`"{1}`" album:`"{2}`"'.format(track_name,track_artist,track_album))
+        query_result = self.sp.search(query_string, limit=5, type='track')['tracks']['items']
         exact_track_found = False
         result = []
         if not query_result :
@@ -104,6 +105,7 @@ class SpotifyHandler:
         else :
             result_tracks_list = []
             # On parcourt les résultats (5 max)
+            # Not needed anymore as the query string is now pre-parametered with the track's album and artist, but anyway
             for elem in query_result:
                 result_track_uri = elem['id']
                 current_track = self.sp.track(result_track_uri)
@@ -113,15 +115,14 @@ class SpotifyHandler:
                 result_tracks_list.append(current_track_data)
                 # Si le résultat courant correspond exactement au morceau cherché, on ne renvoie que celui-là ; sinon on continue de parcourir en ajoutant les morceaux aux résultat potentiels
                 if current_track_data[1] == track_name and current_track_data[2] == track_artist and current_track_data[3] == track_album:
-                    result_tracks_list = [current_track_data]
-                    result = result_tracks_list
+                    #result_tracks_list = [current_track_data]
+                    result = current_track_data
                     exact_track_found = True
-                    print('INFO : Morceau exact trouvé')
                     break
-            # Si aucun résultat exact n'a été trouvé, on renvoie la liste des résultats potentiels
+            # Si aucun résultat exact n'a été trouvé, on renvoie le premier résultat
             if not exact_track_found :
                 print('AVERTISSEMENT : le morceau exact n\'a pas été trouvé')
-                result = result_tracks_list
+                result = result_tracks_list[0]
         return result
 
     def create_playlist(self, playlist_name, playlist_description):
@@ -135,7 +136,6 @@ class SpotifyHandler:
     def find_playlist_by_name(self, playlist_name):
         user_playlists = self.sp.user_playlists(self.user_id)
         for playlist in user_playlists['items']:
-            print("Playlist courante : " + playlist['name'])
             if playlist_name == playlist['name']:
                 print('Une playlist existe déjà avec ce nom')
                 return True, playlist['id']
