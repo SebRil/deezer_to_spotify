@@ -12,3 +12,4 @@ Launch the "testUI.py" file to run the main UI.
     - Go to the app's settings
     - Copy the Client ID and the Client Secret into a notepad (or anywhere, just don't save it!)
 
+## 
