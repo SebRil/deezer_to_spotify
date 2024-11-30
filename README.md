@@ -1,7 +1,7 @@
 # deezer_to_spotify
 
 ## Run the app
-Launch the "testUI.py" file to run the main UI.
+Run the app with `python -m streamlit run app.py`
 
 ## Create a Spotify API Application
 - Go to https://developer.spotify.com/dashboard
