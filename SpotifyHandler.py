@@ -113,15 +113,15 @@ class SpotifyHandler:
                 result_tracks_list.append(current_track_data)
                 # Si le résultat courant correspond exactement au morceau cherché, on ne renvoie que celui-là ; sinon on continue de parcourir en ajoutant les morceaux aux résultat potentiels
                 if current_track_data[1] == track_name and current_track_data[2] == track_artist and current_track_data[3] == track_album:
-                    result_tracks_list = [current_track_data]
+                    result_tracks_list = current_track_data
                     result = result_tracks_list
                     exact_track_found = True
                     print('INFO : Morceau exact trouvé')
                     break
-            # Si aucun résultat exact n'a été trouvé, on renvoie la liste des résultats potentiels
+            # Si aucun résultat exact n'a été trouvé, on renvoie le premier résultat
             if not exact_track_found :
                 print('AVERTISSEMENT : le morceau exact n\'a pas été trouvé')
-                result = result_tracks_list
+                result = result_tracks_list[0]
         return result
 
     def create_playlist(self, playlist_name, playlist_description):
@@ -129,15 +129,15 @@ class SpotifyHandler:
         if not playlist_already_exists:
             created_playlist = self.sp.user_playlist_create(self.user_id, playlist_name, False, False, playlist_description)
             playlist_id = created_playlist['id']
-        print("Playlist id = " + playlist_id)
+        print("Created playlist id = " + playlist_id)
         return playlist_id
 
     def find_playlist_by_name(self, playlist_name):
         user_playlists = self.sp.user_playlists(self.user_id)
         for playlist in user_playlists['items']:
-            print("Playlist courante : " + playlist['name'])
+            #print("Playlist courante : " + playlist['name'])
             if playlist_name == playlist['name']:
-                print('Une playlist existe déjà avec ce nom')
+                #print('Une playlist existe déjà avec ce nom')
                 return True, playlist['id']
         return False, None
 
@@ -148,13 +148,22 @@ class SpotifyHandler:
         API_limit = 99
         nb_tracks = len(tracks_list)
         nb_packets = ceil(nb_tracks / API_limit)
+        print(nb_tracks)
+        print(nb_packets)
         last_packet_length = nb_tracks % API_limit
-        j = 0
-        for i in range(nb_packets - 1):
-            self.sp.playlist_add_items(playlist_id, tracks_list[j:(j + API_limit)])
-            j += API_limit
-        if last_packet_length > 0:
-            self.sp.playlist_add_items(playlist_id, tracks_list[j:(j + last_packet_length)])
+        print(last_packet_length)
+        j = 0           
+        #TODO: harmoniser; si on ne sélectionne qu'un morceau j'ai dû ajouter ce if dégueulasse
+        if nb_tracks == 1:
+            print(playlist_id)
+            print(tracks_list[0])
+            self.sp.playlist_add_items(playlist_id, tracks_list[0])
+        else:
+            for i in range(nb_packets - 1):
+                self.sp.playlist_add_items(playlist_id, tracks_list[j:(j + API_limit)])
+                j += API_limit
+            if last_packet_length > 0:
+                self.sp.playlist_add_items(playlist_id, tracks_list[j:(j + last_packet_length)])
     
     # Récupère les playlists
     def get_playlists(self):
@@ -171,4 +180,6 @@ class SpotifyHandler:
     def get_playlist_tracks(self,playlist_id):
         tracks = self.sp.playlist(playlist_id,additional_types=('track'))
         print('##########################')
-        print(tracks['items'])
+        #print(tracks)
+        print(tracks['tracks']['items'])
+        return tracks['tracks']['items']

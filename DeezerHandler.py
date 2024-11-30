@@ -56,32 +56,32 @@ class DeezerHandler:
 
 	def get_playlist_as_dir(self, input_playlists, output_dict):
 		print("Setting playlist dict 2")
-		max = 75
+		max = 100000
 		current = 0
 		for playlist in input_playlists:
 			print(playlist)
 			track_list = []
 			# L'API renvoie uniquement 25 morceaux par 25 morceaux, donc on les parcourt en incrémentant à chaque fois l'index de départ de 25
+			print("Deezer - Getting playlist tracks...")
 			for i in range(ceil(playlist.nb_tracks/25)):
 				try:
-					print("Getting playlist tracks...")
 					playlists_tracks = playlist.get_tracks(index=i*25)
 				except:
-					print("API error?")
+					print("Deezer - API error?")
 					return output_dict
 				for track in playlists_tracks:
-					print("ajout de: " + track.title)
+					#print("ajout de: " + track.title)
 					track_list.append([track.title, track.artist.name, track.album.title])
-					print("Ajouté!")
+					#print("Ajouté!")
 					current += 1
 					if current >= max:
-						print("Reaching too many songs in a variable, stopping here")
+						print("Deezer - Reaching too many songs in a variable, stopping here")
 						break
 				if current >= max:
 					break
-			print("Adding playlist to dict")
+			#print("Adding playlist to dict")
 			output_dict[playlist.title] = track_list
-		print("Returning playlist dict")
+		print("Deezer - Returning playlist dict")
 		return output_dict
 
 	def get_loved_tracks_as_dir(self, private_user):
