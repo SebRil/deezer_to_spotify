@@ -113,15 +113,15 @@ class SpotifyHandler:
                 result_tracks_list.append(current_track_data)
                 # Si le résultat courant correspond exactement au morceau cherché, on ne renvoie que celui-là ; sinon on continue de parcourir en ajoutant les morceaux aux résultat potentiels
                 if current_track_data[1] == track_name and current_track_data[2] == track_artist and current_track_data[3] == track_album:
-                    result_tracks_list = [current_track_data]
+                    result_tracks_list = current_track_data
                     result = result_tracks_list
                     exact_track_found = True
                     print('INFO : Morceau exact trouvé')
                     break
-            # Si aucun résultat exact n'a été trouvé, on renvoie la liste des résultats potentiels
+            # Si aucun résultat exact n'a été trouvé, on renvoie le premier de la liste de résultats
             if not exact_track_found :
                 print('AVERTISSEMENT : le morceau exact n\'a pas été trouvé')
-                result = result_tracks_list
+                result = result_tracks_list[0]
         return result
 
     def create_playlist(self, playlist_name, playlist_description):
