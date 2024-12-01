@@ -89,7 +89,8 @@ def handle_deezer_input_playlist(playlist_id):
     try:
         deezer_handler = dh.DeezerHandler()
         playlist = deezer_handler.get_public_playlist(playlist_id)
-        st.title("The playlist title is: ", playlist.title)
+        st.title(playlist.title)
+        st.text("Select the songs to migrate to Spotify")
     except Exception as e:
         st.sidebar.write("Wrong playlist ID 🫣")
         playlist = None
