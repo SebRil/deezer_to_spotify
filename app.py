@@ -13,6 +13,8 @@ def reset_session(caller):
     st.session_state.search_songs = False
     st.session_state.sptfy_matches = []
     st.session_state.playlist_created_success = ''
+    if('caller' == 'sptf_inputs'):
+        st.session_state.spotify_handler = None
 
 # Left menu
 # Deezer elements
@@ -42,27 +44,15 @@ elif deezer_element_choice == 'All playlists from a user':
 #global sptfy_handler
 #sptfy_handler=None
 st.sidebar.text('Spotify')
-spfy_app_id = st.sidebar.text_input("Spotify Application ID", "",on_change=reset_session, args=('sptf_app_id',))
-spfy_app_secret = st.sidebar.text_input("Spotify Application Secret", "",on_change=reset_session, args=('sptf_app_id',))
-spfy_access_token = st.sidebar.text_input("Spotify Application Redirect URI", "",on_change=reset_session, args=('sptf_app_id',))
+spfy_app_id = st.sidebar.text_input("Spotify Application ID", "",on_change=reset_session, args=('sptf_inputs',))
+spfy_app_secret = st.sidebar.text_input("Spotify Application Secret", "",on_change=reset_session, args=('sptf_inputs',))
+spfy_access_token = st.sidebar.text_input("Spotify Application Redirect URI", "",on_change=reset_session, args=('sptf_inputs',))
 
 # Initiate session variables
 if 'search_songs' not in st.session_state:
     st.session_state.search_songs = False
 
 # Methods
-def get_spotify_handler():
-    if spfy_app_id != '' and spfy_app_secret != '' and spfy_access_token != '':
-        try:
-            spotify_handler = sh.SpotifyHandler(spfy_app_id,spfy_app_secret,spfy_access_token)
-            st.sidebar.write("Successfully connected to Spotify! 😊")
-        except Exception as e:
-            st.sidebar.write("Couldn't connect to this Spotify App 🫣")
-            spotify_handler = None
-    else:
-        spotify_handler = None
-    return spotify_handler
-
 def search_sptfy_songs(dzr_songs, sptfy_handler):
     results=[]
     for index,dzr_song in dzr_songs.iterrows():
@@ -128,7 +118,7 @@ def handle_deezer_input_playlist(playlist_id):
         st.button('Search songs in Spotify', on_click=button_search_songs_clicked)
         if st.session_state.search_songs:
             print("Searching Spotify songs")
-            sptfy_handler = get_spotify_handler()
+            sptfy_handler = st.session_state.spotify_handler
             if sptfy_handler is None:
                 st.write('Please connect to your Spotify API application to search for songs 🫣')
             else:
@@ -205,3 +195,25 @@ if dzr_playlist_id != '' and dzr_playlist_id != default_value:
     handle_deezer_input_playlist(dzr_playlist_id)
 #if dzr_user_id != '' and dzr_user_id != default_value:
 #    handle_deezer_input_user(dzr_user_id)
+
+if spfy_app_id != '' and spfy_app_secret != '' and spfy_access_token != '':
+    # Check if a spotify handler already exists in cache
+    create_spotify_handler = True
+    if 'spotify_handler' in st.session_state:
+        if st.session_state.spotify_handler is not None:
+            print('Récupération du spotify_handler depuis le cache')
+            spotify_handler = st.session_state.spotify_handler
+            create_spotify_handler = False
+    # Create the spotify handler if needed
+    if create_spotify_handler:
+        print('Création du spotify_handler from scratch')
+        try:
+            spotify_handler = sh.SpotifyHandler(spfy_app_id,spfy_app_secret,spfy_access_token)
+        except Exception as e:
+            st.sidebar.write("Couldn't connect to this Spotify App 🫣")
+            spotify_handler = None
+        st.session_state.spotify_handler = spotify_handler
+    if spotify_handler is not None:
+        st.sidebar.write("Successfully connected to Spotify! 😊")
+else:
+    spotify_handler = None
