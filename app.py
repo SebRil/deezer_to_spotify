@@ -100,6 +100,7 @@ def handle_deezer_input_playlist(playlist_id):
         dzr_df = pd.DataFrame(list_for_df, columns=["Title", "Artist", "Album","Select"])
         dzr_track_array = st.data_editor(
             dzr_df,
+            use_container_width=True,
             column_config={
                 "Select": st.column_config.CheckboxColumn(
                     "Select",
@@ -119,7 +120,10 @@ def handle_deezer_input_playlist(playlist_id):
         st.button('Search songs in Spotify', on_click=button_search_songs_clicked)
         if st.session_state.search_songs:
             print("Searching Spotify songs")
-            sptfy_handler = st.session_state.spotify_handler
+            if 'spotify_handler' in st.session_state:
+                sptfy_handler = st.session_state.spotify_handler
+            else:
+                sptfy_handler=None
             if sptfy_handler is None:
                 st.write('Please connect to your Spotify API application to search for songs 🫣')
             else:
@@ -141,6 +145,7 @@ def handle_deezer_input_playlist(playlist_id):
                         sptfy_df = pd.DataFrame.from_records(sptfy_matches, columns=["Id","Title", "Artist", "Album"])
                         sptfy_track_array = st.data_editor(
                             sptfy_df,
+                            use_container_width=True,
                             disabled=["Id","Title","Artist","Album"],
                             column_order=("Title", "Artist", "Album")
                         )
