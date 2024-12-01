@@ -89,7 +89,7 @@ def handle_deezer_input_playlist(playlist_id):
     try:
         deezer_handler = dh.DeezerHandler()
         playlist = deezer_handler.get_public_playlist(playlist_id)
-        st.write("The playlist title is", playlist.title)
+        st.title("The playlist title is: ", playlist.title)
     except Exception as e:
         st.sidebar.write("Wrong playlist ID 🫣")
         playlist = None
