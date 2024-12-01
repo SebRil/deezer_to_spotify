@@ -20,7 +20,8 @@ def reset_session(caller):
 # Deezer elements
 global deezer_handler
 deezer_handler=None
-st.sidebar.text('Deezer')
+#st.sidebar.text('Deezer')
+st.sidebar.title('Deezer')
 deezer_element_choice = st.sidebar.selectbox(
     'What element would you like to retrieve from Deezer?',
     ('One public playlist', 'A user\'s public playlists', 'All playlists from a user')
@@ -43,7 +44,7 @@ elif deezer_element_choice == 'All playlists from a user':
 # Spotify elements
 #global sptfy_handler
 #sptfy_handler=None
-st.sidebar.text('Spotify')
+st.sidebar.title('Spotify')
 spfy_app_id = st.sidebar.text_input("Spotify Application ID", "",on_change=reset_session, args=('sptf_inputs',))
 spfy_app_secret = st.sidebar.text_input("Spotify Application Secret", "",on_change=reset_session, args=('sptf_inputs',))
 spfy_access_token = st.sidebar.text_input("Spotify Application Redirect URI", "",on_change=reset_session, args=('sptf_inputs',))
