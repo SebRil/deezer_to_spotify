@@ -8,6 +8,8 @@ import SpotifyHandler as sh
 # - User ID (public playlists)
 # - User application (private playlists)
 
+st.set_page_config('wide')
+
 def reset_session(caller):
     print("Reset cache initiated by " + caller)
     st.session_state.search_songs = False
