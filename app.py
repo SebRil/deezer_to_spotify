@@ -8,7 +8,7 @@ import SpotifyHandler as sh
 # - User ID (public playlists)
 # - User application (private playlists)
 
-st.set_page_config('wide')
+st.set_page_config(page_title='Deezer To Spotify Migration by Seb!', layout='wide')
 
 def reset_session(caller):
     print("Reset cache initiated by " + caller)
