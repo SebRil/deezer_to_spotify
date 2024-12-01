@@ -3,18 +3,27 @@ import pandas as pd
 import DeezerHandler as dh
 import SpotifyHandler as sh
 
+from streamlit_javascript import st_javascript
+import urllib
+from random import randrange
+import calendar
+from datetime import datetime
+
 # Deezer Inputs can be either:
 # - Playlist ID
 # - User ID (public playlists)
 # - User application (private playlists)
+
+print('####### RUNNING INSTANCE #######')
 
 def reset_session(caller):
     print("Reset cache initiated by " + caller)
     st.session_state.search_songs = False
     st.session_state.sptfy_matches = []
     st.session_state.playlist_created_success = ''
-    if('caller' == 'sptf_inputs'):
+    if(caller == 'sptf_inputs'):
         st.session_state.spotify_handler = None
+        st.session_state.sptfy_api_token = ''
 
 # Left menu
 # Deezer elements
@@ -184,6 +193,7 @@ if dzr_playlist_id != '' and dzr_playlist_id != default_value:
 if spfy_app_id != '' and spfy_app_secret != '' and spfy_redirect_uri != '':
     # Check if a spotify handler already exists in cache
     create_spotify_handler = True
+    spotify_handler = None
     if 'spotify_handler' in st.session_state:
         if st.session_state.spotify_handler is not None:
             print('Récupération du spotify_handler depuis le cache')
@@ -192,12 +202,70 @@ if spfy_app_id != '' and spfy_app_secret != '' and spfy_redirect_uri != '':
     # Create the spotify handler if needed
     if create_spotify_handler:
         print('Création du spotify_handler from scratch')
-        try:
+        scope= "user-library-read playlist-modify-private playlist-modify-public"
+        dt = datetime.today()
+        expires_at = calendar.timegm(dt.utctimetuple()) + 3600
+        if 'js_test' not in st.session_state or not st.session_state.js_test:     
+            st.session_state.js_test = True
+            state = randrange(16)
+            encoded_spfy_app_id = urllib.parse.quote(spfy_app_id)
+            encoded_spfy_redirect_uri = urllib.parse.quote(spfy_redirect_uri)
+            encoded_state = urllib.parse.quote(str(state))
+            encoded_scope = urllib.parse.quote(scope)
+            #js_script = "const rawResponse = await fetch("
+            js_script = "window.open("
+            js_script += '\'https://accounts.spotify.com/authorize'
+            js_script += '?response_type=token'
+            js_script += '&client_id=' + encoded_spfy_app_id
+            js_script += '&scope=' + encoded_scope
+            js_script += '&redirect_uri=' + encoded_spfy_redirect_uri
+            js_script += '&state=' + encoded_state
+            #js_script += '\').then(function(response) {'
+            #js_script += 'return response;}) '
+            js_script += '\')' #WINDOW.OPEN
+
+            #st.subheader("Javascript API call")
+            #print(js_script)
+            return_value = st_javascript(js_script)
+            #st.markdown(f"Return value was: {return_value}")
+            print(f"Return value was: {return_value}")
+
+        # Create cache file            
+        create_cache_file = False
+        print("Token: " + st.session_state.sptfy_api_token)
+        if st.session_state.sptfy_api_token == '':
+            sptfy_api_token_input = st.sidebar.text_input("Token:")
+            if sptfy_api_token_input:
+                print("Setting Token:"+ sptfy_api_token_input)
+                st.session_state.sptfy_api_token = sptfy_api_token_input
+                create_cache_file = True
+        else: 
+            create_cache_file = True
+
+        if create_cache_file:
+            print("Token:" + st.session_state.sptfy_api_token)
+            #from pathlib import Path
+            #my_file = Path(".cache")
+            #if my_file.is_file():
+            #    print('cache already exists')
+            file_content = "{\"access_token\": \""
+            file_content += st.session_state.sptfy_api_token
+            file_content += "\",token_type\": \""
+            file_content += "Bearer"
+            file_content += "\",\"expires_in\": "
+            file_content += "3600"
+            file_content += ",\"refresh_token\": \""
+            file_content += "Nope"
+            file_content += "\",\"scope\": \""
+            file_content += scope
+            file_content += "\",\"expires_at\": "
+            file_content += str(expires_at)
+            file_content += "}"
+            with open(".cache", mode="wt") as f:
+                f.write(file_content)
+        
             spotify_handler = sh.SpotifyHandler(spfy_app_id,spfy_app_secret,spfy_redirect_uri)
-            #spotify_handler = None
-        except Exception as e:
-            st.sidebar.write("Couldn't connect to this Spotify App 🫣")
-            spotify_handler = None
+            #spotify_handler = None #TOREMOVE
         st.session_state.spotify_handler = spotify_handler
     if spotify_handler is not None:
         st.sidebar.write("Successfully connected to Spotify! 😊")
@@ -206,42 +274,6 @@ else:
     spotify_handler = None
 
 
-#from streamlit_javascript import st_javascript
-#import urllib
-#from random import randrange
 
-#if st.sidebar.button("Test Javascript"):
-#    st.session_state.js_test=False
-
-#if spfy_app_id and spfy_redirect_uri:
-#    if 'js_test' not in st.session_state or not st.session_state.js_test:     
-#        st.session_state.js_test = True
-#        state = randrange(16)
-#        scope= "user-library-read playlist-modify-private playlist-modify-public"
-#        encoded_spfy_app_id = urllib.parse.quote(spfy_app_id)
-#        encoded_spfy_redirect_uri = urllib.parse.quote(spfy_redirect_uri)
-#        encoded_state = urllib.parse.quote(str(state))
-#        encoded_scope = urllib.parse.quote(scope)
-        
-#        js_script = "window.open("
-
-        #js_script = "const rawResponse = await fetch("
-
-#        js_script += '\'https://accounts.spotify.com/authorize'
-#        js_script += '?response_type=token'
-#        js_script += '&client_id=' + encoded_spfy_app_id
-#        js_script += '&scope=' + encoded_scope
-#        js_script += '&redirect_uri=' + encoded_spfy_redirect_uri
-#        js_script += '&state=' + encoded_state
-
-        #js_script += '\').then(function(response) {'
-        #js_script += 'return response;}) '
-
-#       js_script += '\')' #WINDOW.OPEN
-
-        # Other way
-#        st.subheader("Javascript API call")
-#        print(js_script)
-#        return_value = st_javascript(js_script)
-#        st.markdown(f"Return value was: {return_value}")
-#        print(f"Return value was: {return_value}")
+if st.sidebar.button("Test Javascript"):
+    st.session_state.js_test=False
