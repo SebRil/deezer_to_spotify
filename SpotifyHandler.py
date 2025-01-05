@@ -19,7 +19,11 @@ class SpotifyHandler:
         os.environ['SPOTIPY_REDIRECT_URI'] = redirect_uri
         
         scope = "user-library-read playlist-modify-private playlist-modify-public"
-        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        try:
+            self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        except Exception as e:
+            print('Erreur de création du client Spotify')
+            print(e)
 
         #print('test')
         #token = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
@@ -58,11 +62,13 @@ class SpotifyHandler:
         #self.sp = spotipy.Spotify(auth=access_token)
 
         try :
-            self.user_id = self.sp.current_user()['id']
-        except :
-            print("Erreur d'authentification Spotify : suppression du cache et re-tentative")
-            os.remove(".cache")
-            self.user_id = self.sp.current_user()['id']
+            self.user_id = self.sp.current_user()["id"]
+        except Exception as e:
+            print("Erreur d'authentification Spotify")
+            print(e)
+            #print("Erreur d'authentification Spotify : suppression du cache et re-tentative")
+            #os.remove(".cache")
+            #self.user_id = self.sp.current_user()["id"]
 
     def find_tracks_in_playlists(self, input_playlist_dict):
         sptfy_playlist_dict = {}

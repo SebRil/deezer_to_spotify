@@ -3,11 +3,18 @@ import pandas as pd
 import DeezerHandler as dh
 import SpotifyHandler as sh
 
+from streamlit_javascript import st_javascript
+import urllib
+from random import randrange
+import calendar
+from datetime import datetime
+
 # Deezer Inputs can be either:
 # - Playlist ID
 # - User ID (public playlists)
 # - User application (private playlists)
 
+print('####### RUNNING INSTANCE #######')
 st.set_page_config(page_title='Deezer To Spotify Migration by Seb!', layout='wide')
 
 def reset_session(caller):
@@ -15,8 +22,9 @@ def reset_session(caller):
     st.session_state.search_songs = False
     st.session_state.sptfy_matches = []
     st.session_state.playlist_created_success = ''
-    if('caller' == 'sptf_inputs'):
+    if(caller == 'sptf_inputs'):
         st.session_state.spotify_handler = None
+        st.session_state.sptfy_api_token = ''
 
 # Left menu
 # Deezer elements
@@ -44,12 +52,10 @@ elif deezer_element_choice == 'All playlists from a user':
     st.write("This feature has not been implemented! 🥵")
 
 # Spotify elements
-#global sptfy_handler
-#sptfy_handler=None
 st.sidebar.title('Spotify')
 spfy_app_id = st.sidebar.text_input("Spotify Application ID", "",on_change=reset_session, args=('sptf_inputs',))
 spfy_app_secret = st.sidebar.text_input("Spotify Application Secret", "",on_change=reset_session, args=('sptf_inputs',))
-spfy_access_token = st.sidebar.text_input("Spotify Application Redirect URI", "",on_change=reset_session, args=('sptf_inputs',))
+spfy_redirect_uri = st.sidebar.text_input("Spotify Application Redirect URI", "",on_change=reset_session, args=('sptf_inputs',))
 
 # Initiate session variables
 if 'search_songs' not in st.session_state:
@@ -178,25 +184,6 @@ def handle_deezer_input_user(dzr_user_id):
     #if dzr_user_id is not None:
     #    deezer_playlists = deezer_handler.get_playlists_from_user(dzr_user_id)
 
-    #    selected_playlists = st.multiselect(
-    #        "Select playlists you want to migrate",
-    #        list(deezer_playlists.keys()),
-    #        [])
-
-    #    for playlist in selected_playlists:
-    #        st.title('Migrate playlist %s' % playlist)
-    #        df = pd.DataFrame(deezer_playlists[playlist], columns=["Title", "Author", "Album"])
-    #        df_spotify = pd.DataFrame([["Test1", "Test1", "Test1"],["Test2", "Test2", "Test2"]],columns=["Title", "Author", "Album"])
-            #edited_df = st.data_editor(df)
-    #        edited_df = st.table(df)
-            #col1, col2 = st.columns(2)
-            #col1.data_editor(df)
-            #col2.data_editor(df_spotify)
-            #tabs
-            #tab1, tab2 = st.tabs(["Data", "Chart"])
-            #with tab1:
-            #    st.table(df)
-
 def handle_deezer_input_app(app_id, app_secret, app_token):
     pass
 
@@ -205,9 +192,10 @@ if dzr_playlist_id != '' and dzr_playlist_id != default_value:
 #if dzr_user_id != '' and dzr_user_id != default_value:
 #    handle_deezer_input_user(dzr_user_id)
 
-if spfy_app_id != '' and spfy_app_secret != '' and spfy_access_token != '':
+if spfy_app_id != '' and spfy_app_secret != '' and spfy_redirect_uri != '':
     # Check if a spotify handler already exists in cache
     create_spotify_handler = True
+    spotify_handler = None
     if 'spotify_handler' in st.session_state:
         if st.session_state.spotify_handler is not None:
             print('Récupération du spotify_handler depuis le cache')
@@ -216,13 +204,78 @@ if spfy_app_id != '' and spfy_app_secret != '' and spfy_access_token != '':
     # Create the spotify handler if needed
     if create_spotify_handler:
         print('Création du spotify_handler from scratch')
-        try:
-            spotify_handler = sh.SpotifyHandler(spfy_app_id,spfy_app_secret,spfy_access_token)
-        except Exception as e:
-            st.sidebar.write("Couldn't connect to this Spotify App 🫣")
-            spotify_handler = None
+        scope= "user-library-read playlist-modify-private playlist-modify-public"
+        dt = datetime.today()
+        expires_at = calendar.timegm(dt.utctimetuple()) + 3600
+        if 'js_test' not in st.session_state or not st.session_state.js_test:     
+            st.session_state.js_test = True
+            state = randrange(16)
+            encoded_spfy_app_id = urllib.parse.quote(spfy_app_id)
+            encoded_spfy_redirect_uri = urllib.parse.quote(spfy_redirect_uri)
+            encoded_state = urllib.parse.quote(str(state))
+            encoded_scope = urllib.parse.quote(scope)
+            #js_script = "const rawResponse = await fetch("
+            js_script = "window.open("
+            js_script += '\'https://accounts.spotify.com/authorize'
+            js_script += '?response_type=token'
+            js_script += '&client_id=' + encoded_spfy_app_id
+            js_script += '&scope=' + encoded_scope
+            js_script += '&redirect_uri=' + encoded_spfy_redirect_uri
+            js_script += '&state=' + encoded_state
+            #js_script += '\').then(function(response) {'
+            #js_script += 'return response;}) '
+            js_script += '\')' #WINDOW.OPEN
+
+            #st.subheader("Javascript API call")
+            #print(js_script)
+            return_value = st_javascript(js_script)
+            #st.markdown(f"Return value was: {return_value}")
+            print(f"Return value was: {return_value}")
+
+        # Create cache file            
+        create_cache_file = False
+        print("Token: " + st.session_state.sptfy_api_token)
+        if st.session_state.sptfy_api_token == '':
+            sptfy_api_token_input = st.sidebar.text_input("Token:")
+            if sptfy_api_token_input:
+                print("Setting Token:"+ sptfy_api_token_input)
+                st.session_state.sptfy_api_token = sptfy_api_token_input
+                create_cache_file = True
+        else: 
+            create_cache_file = True
+
+        if create_cache_file:
+            print("Token:" + st.session_state.sptfy_api_token)
+            #from pathlib import Path
+            #my_file = Path(".cache")
+            #if my_file.is_file():
+            #    print('cache already exists')
+            file_content = "{\"access_token\": \""
+            file_content += st.session_state.sptfy_api_token
+            file_content += "\",token_type\": \""
+            file_content += "Bearer"
+            file_content += "\",\"expires_in\": "
+            file_content += "3600"
+            file_content += ",\"refresh_token\": \""
+            file_content += "Nope"
+            file_content += "\",\"scope\": \""
+            file_content += scope
+            file_content += "\",\"expires_at\": "
+            file_content += str(expires_at)
+            file_content += "}"
+            with open(".cache", mode="wt") as f:
+                f.write(file_content)
+        
+            spotify_handler = sh.SpotifyHandler(spfy_app_id,spfy_app_secret,spfy_redirect_uri)
+            #spotify_handler = None #TOREMOVE
         st.session_state.spotify_handler = spotify_handler
     if spotify_handler is not None:
         st.sidebar.write("Successfully connected to Spotify! 😊")
+    
 else:
     spotify_handler = None
+
+
+
+if st.sidebar.button("Test Javascript"):
+    st.session_state.js_test=False
