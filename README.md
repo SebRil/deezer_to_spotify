@@ -10,7 +10,7 @@
 
 ### Créez une application Spotify API
 - Ouvrir https://developer.spotify.com/dashboard dans votre navigateur
-- Authentifiez-vous avec votre compte Spotify
+- Connectez-vous avec votre compte Spotify
 - Créez une nouvelle application:
     - Fournissez un nom et une description à votre application (exemple: "Deezer_Spotify" "Mon app de migration de chansons de Deezer vers Spotify")
     - Réglez la "Redirect URI" à la valeur suivante: `http://localhost:8888`
