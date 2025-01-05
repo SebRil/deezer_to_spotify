@@ -1,5 +1,28 @@
 # deezer_to_spotify
 
+## FRENCH (english version below)
+
+### Lancez l'application
+- Téléchargez la dernière release depuis GitHub, extrayez le zip obtenu quelque-part sur votre machine
+- Lancez l'appli en faisant Clic Droit > Executer avec Powershell sur le fichier `setup.ps1`
+
+### Créez une application Spotify API
+- Ouvrir https://developer.spotify.com/dashboard dans votre navigateur
+- Authentifiez-vous avec votre compte Spotify
+- Créez une nouvelle application:
+    - Fournissez un nom et une description à votre application (exemple: "Deezer_Spotify" "Mon app de migration de chansons de Deezer vers Spotify")
+    - Réglez la "Redirect URI" à la valeur suivante: http://localhost:8888
+    - Cochez l'utilisation de la "Web API"
+    - Ouvrez les paramètres de l'application
+    - Copiez le Client ID et le Client Secret dans un bloc-notes (ou n'importe où)
+
+### Utilisez l'appli!
+- Fournissez l'ID de la playlist Deezer à migrer (par exemple, l'ID de"https://www.deezer.com/fr/playlist/12836238621" est 12836238621)
+- Fournissez les paramètres de votre application utilsant l'API de Spotify (Client ID, Client secret, redirect URI)
+- Sélectionnez les chansons à migrer depuis la playlist Deezer
+- Lancez la recherche de ces chansons dans Spotify et validez les résultats obtenus
+- Générez la playlist
+
 ## ENGLISH
 
 ### Run the app
@@ -22,26 +45,3 @@
 - Select the song to migrate from the Deezer playlist
 - Search for these songs in Spotify & validate the findings
 - Create the playlist
-
-## FRENCH
-
-### Lancez l'application
-- Téléchargez la dernière release depuis GitHub, extrayez le zip obtenu quelque-part sur votre machine
-- Lancez l'appli en faisant Clic Droit > Executer avec Powershell sur le fichier `setup.ps1`
-
-### Créez une application Spotify API
-- Ouvrir https://developer.spotify.com/dashboard dans votre navigateur
-- Authentifiez-vous avec votre compte Spotify
-- Créez une nouvelle application:
-    - Fournissez un nom et une description à votre application (exemple: "Deezer_Spotify" "Mon app de migration de chansons de Deezer vers Spotify")
-    - Réglez la "Redirect URI" à la valeur suivante: http://localhost:8888
-    - Cochez l'utilisation de la "Web API"
-    - Ouvrez les paramètres de l'application
-    - Copiez le Client ID et le Client Secret dans un bloc-notes (ou n'importe où)
-
-### Utilisez l'appli!
-- Fournissez l'ID de la playlist Deezer à migrer (par exemple, l'ID de"https://www.deezer.com/fr/playlist/12836238621" est 12836238621)
-- Fournissez les paramètres de votre application utilsant l'API de Spotify (Client ID, Client secret, redirect URI)
-- Sélectionnez les chansons à migrer depuis la playlist Deezer
-- Lancez la recherche de ces chansons dans Spotify et validez les résultats obtenus
-- Générez la playlist
