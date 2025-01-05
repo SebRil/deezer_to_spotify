@@ -5,6 +5,7 @@
 ### Lancez l'application
 - Téléchargez la dernière release depuis GitHub, extrayez le zip obtenu quelque-part sur votre machine
 - Lancez l'appli en faisant Clic Droit > Executer avec Powershell sur le fichier `setup.ps1`
+- Après quelques minutes, un onglet devrait s'ouvrir dans votre navigateur avec une interface web
 
 ### Créez une application Spotify API
 - Ouvrir https://developer.spotify.com/dashboard dans votre navigateur
@@ -28,6 +29,7 @@
 ### Run the app
 - Download the latest release from GitHub and extract the archive somewhere on your computer
 - Run the app right-click `setup.ps1` and execute it with Powershell
+- After a few minutes, a tab should open in your browser displaying a web interface
 
 ### Create a Spotify API Application
 - Go to https://developer.spotify.com/dashboard
