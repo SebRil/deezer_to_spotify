@@ -124,7 +124,7 @@ class SpotifyHandler:
                     exact_track_found = True
                     print('INFO : Morceau exact trouvé')
                     break
-            # Si aucun résultat exact n'a été trouvé, on renvoie le premier de la liste de résultats
+            # Si aucun résultat exact n'a été trouvé, on renvoie le premier résultat
             if not exact_track_found :
                 print('AVERTISSEMENT : le morceau exact n\'a pas été trouvé')
                 result = result_tracks_list[0]

@@ -15,6 +15,7 @@ from datetime import datetime
 # - User application (private playlists)
 
 print('####### RUNNING INSTANCE #######')
+st.set_page_config(page_title='Deezer To Spotify Migration by Seb!', layout='wide')
 
 def reset_session(caller):
     print("Reset cache initiated by " + caller)
@@ -94,7 +95,8 @@ def handle_deezer_input_playlist(playlist_id):
     try:
         deezer_handler = dh.DeezerHandler()
         playlist = deezer_handler.get_public_playlist(playlist_id)
-        st.write("The playlist title is", playlist.title)
+        st.title(playlist.title)
+        st.text("Select the songs to migrate to Spotify")
     except Exception as e:
         st.sidebar.write("Wrong playlist ID 🫣")
         playlist = None
