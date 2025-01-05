@@ -17,6 +17,7 @@
     - Cochez l'utilisation de la "Web API"
     - Ouvrez les paramètres de l'application
     - Copiez le Client ID et le Client Secret dans un bloc-notes (ou n'importe où)
+        - ![Alt text](./readme_files/spotify_app.png?raw=true "Spotify API Application")
 
 ### Utilisez l'appli!
 - Fournissez l'ID de la playlist Deezer à migrer (par exemple, l'ID de"https://www.deezer.com/fr/playlist/12836238621" est 12836238621)
@@ -24,6 +25,7 @@
 - Sélectionnez les chansons à migrer depuis la playlist Deezer
 - Lancez la recherche de ces chansons dans Spotify et validez les résultats obtenus
 - Générez la playlist
+    - ![Alt text](./readme_files/exemple.png?raw=true "Exemple")
 
 ## ENGLISH
 
