@@ -8,6 +8,8 @@ import SpotifyHandler as sh
 # - User ID (public playlists)
 # - User application (private playlists)
 
+print('####### RUNNING INSTANCE #######')
+
 st.set_page_config(page_title='Deezer To Spotify Migration by Seb!', layout='wide')
 
 def reset_session(caller):

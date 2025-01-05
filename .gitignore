@@ -6,3 +6,4 @@ venv
 .streamlit
 .vscode
 .streamlit
+secrets.yaml
