@@ -1,4 +1,4 @@
-# deezer_to_spotify
+# Deezer to Spotify migration
 
 ## FRENCH (english version below)
 
