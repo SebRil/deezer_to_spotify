@@ -26,7 +26,7 @@
 ## FRENCH
 
 ### Lancez l'application
-- Télécharger la dernière release depuis GitHub, extrayez le zip obtenu quelque-part sur votre machine
+- Téléchargez la dernière release depuis GitHub, extrayez le zip obtenu quelque-part sur votre machine
 - Lancez l'appli en faisant Clic Droit > Executer avec Powershell sur le fichier `setup.ps1`
 
 ### Create a Spotify API Application
